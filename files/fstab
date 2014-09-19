@@ -1,0 +1,24 @@
+# 
+# /etc/fstab: static file system information
+#
+# <file system>	<dir>	<type>	<options>	<dump>	<pass>
+tmpfs		/tmp	tmpfs	nodev,nosuid	0	0
+
+/dev/sda2              /boot         ext2      defaults            0      1
+/dev/mapper/root       /             ext4      defaults,noatime    0      1
+
+/dev/mapper/truecrypt1 /media/vault  ntfs-3g   uid=1000,gid=100,fmask=133,dmask=022,noatime,noauto   0 0
+/dev/mapper/truecrypt2 /media/bup    ntfs-3g   uid=1000,gid=100,fmask=133,dmask=022,noatime,noauto   0 0
+
+#http://localhost:80/dav   /media/vault/jwhendy/org/aux/mobile davfs user,rw,noauto,uid=jwhendy 0 0
+
+//usfile02/users/a1rwhzz /media/h cifs user=a1rwhzz,noauto,uid=1000,gid=100,nobrl 0 0
+#//usfile02/users/a1rwhzz /media/h cifs user=a1rwhzz,noauto,uid=1000,gid=100,nobrl,domain=USAC.MMM.COM 0 0
+//usfile01/rla /media/cisco cifs user=a1rwhzz,noauto,uid=1000,gid=100,nobrl,domain=USAC.MMM.COM 0 0
+//usfile01/atdlab /media/i  cifs user=a1rwhzz,noauto,uid=1000,gid=100,nobrl,domain=USAC.MMM.COM 0 0
+#//169.10.16.140/atdlab /media/i  cifs user=a1rwhzz,noauto,uid=1000,gid=100,nobrl 0 0
+//169.10.16.11/panfs /media/hpc  cifs user=a1rwhzz,noauto,uid=1000,gid=100,nobrl 0 0
+#//169.10.107.27/simulia_installs  /mnt cifs user=simulia,noauto,ro 0 0
+#//169.11.80.41/LINUX /media/cad cifs user=a1rwhzz,noauto,uid=1000,gid=100,nobrl 0 0
+#//169.10.16.134/Tc_crpl /media/q cifs user=a1rwhzz,noauto,uid=1000,gid=100,nobrl 0 0
+#//169.10.16.140/Tc /media/p      cifs user=a1rwhzz,noauto,uid=1000,gid=100,nobrl 0 0

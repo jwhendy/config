@@ -1,0 +1,501 @@
+* Installed applications
+** Work
+- guvcview
+- impressive
+- slider (from git in installed)
+- spacefm
+- hamster-time-tracker
+
+
+- time tracking (look into)
+  - hamster
+  - [[http://sourceforge.net/projects/timecult/?source=recommended][timecult]]
+  - [[http://sourceforge.net/projects/tinytimetracker/?source=recommended][tiny time tracker]]
+  - [[http://sourceforge.net/projects/timeslottracker/][timeslot]]
+  - [[http://rachota.sourceforge.net/en/demo.html][rachota]]
+  - [[http://www.taskcoach.org/][taskcoach]]
+  - [[https://hubstaff.com/linux][hubstaff]]
+  - [[https://www.toggl.com/][toggl]]
+  - [[http://freecode.com/projects/arbtt][arbtt]]
+  - [[https://github.com/tkowalewski/harvest-gtk][harvest]]
+  - [[http://sachachua.com/blog/2007/12/clocking-time-with-emacs-org/][sacha on org 1]]
+  - [[http://sachachua.com/blog/2013/06/how-i-use-emacs-org-mode-for-my-weekly-reviews/][sacha on org 2]]
+  - [[http://www.cyborganize.org/clarity/software/emacs-org-mode-installation-configuration-and-tutorial/how-to-clock-work-hours-in-org-mode/][org article on time tracking]]
+  - [[http://superuser.com/questions/579281/advanced-time-tracking-in-org-mode][SuperUser on time agenda views in org]]
+
+32 chroot
+- skype
+- lotus notes
+- libreoffice (common, calc, writer, impress, gnome)
+- evince-gtk
+
+** ThinkPad
+- transmission
+- darktable
+- brasero
+- gvfs
+- pcmanfm
+- thunar
+- clementine: gstreamer0.10-good/ugly/base
+ 
+* Applications of interest
+- sozi/inkscape: prezi-like presentations
+- chemtool: chemical drawing; optional deps: pictex, xfig, transfig
+- time tracking
+  - hamster (installing git version)
+
+* Setup stuff
+
+- cache in tmpfs
+- set size for journal log
+
+
+* Fix for chromium-browser-bin
+
+#+begin_src sh
+sed -i 's/libudev.so.0/libudev.so.1/' /opt/chromium-browser/chrome
+#+end_src
+
+* Fix for blinking wifi
+
+#+begin_src sh :file /etc/modprobe.d/iwlwifi.conf
+# /etc/modprobe.d/iwlwifi.conf
+options iwlwifi led_mode=1
+#+end_src
+
+* Fix for wpa_supplicant
+- Visit copy/paste or download this patch: http://w1.fi/bugz/attachment.cgi?id=235
+- Update abs by running =sudo abs=
+- Copy wpa_supplicant: =cp -r /var/abs/core/wpa_supplicant /your/build/dir/=
+- CD to the abs dir: =cd /your/build/dir/wpa_supplicant=
+- Download the source only: =makepkg -o=
+- Copy the patch to the right place: =cp /path/to/file.patch src/wpa_supplicant-1.0/=
+- Edit the PKGBUILD to contain =patch -p1 -i "$srcdir/wpa_supplicant-1.0/openssl.patch"=
+  - Put after line =patch -Np1 -i "$srcdir/hostap_allow-linking-with-libnl-3.2.patch"=
+- Make/install the package: =makepkg -si=
+
+Here's the patch:
+#+begin_src sh :eval no
+--- a/src/crypto/tls_openssl.c	
++++ a/src/crypto/tls_openssl.c	
+@@ -920,6 +920,8 @@ struct tls_connection * tls_connection_init(void *ssl_ctx)
+ #ifdef SSL_OP_NO_COMPRESSION
+ 	options |= SSL_OP_NO_COMPRESSION;
+ #endif /* SSL_OP_NO_COMPRESSION */
++	options |= SSL_OP_NO_TICKET;
++	options |= SSL_OP_NO_SESSION_RESUMPTION_ON_RENEGOTIATION;
+ 	SSL_set_options(conn->ssl, options);
+ 
+ 	conn->ssl_in = BIO_new(BIO_s_mem());
+#+end_src
+
+* Openbox stuff
+
+gtk-theme: http://gnome-look.org/content/show.php/Zukitwo?content=140562
+openbox theme: http://box-look.org/content/show.php/Zukitwo-OB?content=146154
+
+* Scripts
+** Config harvest
+
+#+begin_src sh
+#! /bin/bash
+
+DIR=/home/jwhendy/installed/arch-configs;
+
+
+###
+# system config harvest
+###
+
+cp /etc/fstab $DIR/arch-fstab
+
+if [ -f /boot/config-bigBang ] ; then
+  cp /boot/config-bigBang $DIR/kernel-config-bigBang
+fi ;
+
+if [ -f /home/jwhendy/.ncmpcpp/config ] ; then
+  cp /home/jwhendy/.ncmpcpp/config $DIR/ncmpcpp-config
+fi ;
+
+if [ -f /home/jwhendy/.mpd/mpd-config ] ; then
+  cp /home/jwhendy/.mpd/mpd-config $DIR/mpd-config
+fi ;
+
+cp /home/jwhendy/.Xdefaults $DIR/Xdefaults
+
+cp /etc/rc.conf $DIR/rc.conf
+
+cp /etc/mkinitcpio.conf $DIR/mkinitcpio.conf
+
+cp /etc/X11/xorg.conf.d/10-synaptics.conf $DIR/10-synaptics.conf
+
+cp /etc/X11/xorg.conf.d/10-monitor.conf $DIR/10-monitor.conf
+
+cp /home/jwhendy/.emacs $DIR/.emacs
+
+cp /home/jwhendy/org/aux/emacs-config.org $DIR/emacs-config.org
+
+cp /home/jwhendy/.config/chromium/Default/Bookmarks $DIR/chromium-bookmarks
+
+pacman -Qq > $DIR/package-list
+
+###
+# end system config harvest
+###
+
+
+###
+# openbox harvest
+###
+
+cp /home/jwhendy/.config/openbox/rc.xml $DIR/rc.xml
+cp /home/jwhendy/.config/openbox/autostart.sh $DIR/autostart.xml
+cp /home/jwhendy/.config/openbox/menu.xml $DIR/menu.xml
+cp /home/jwhendy/.config/tint2/tint2rc $DIR/tint2rc
+cp /etc/conky/conky.conf $DIR/conky.conf
+cp /etc/conky/conky-top.conf $DIR/conky-top.conf
+
+###
+# end openbox harvest
+###
+
+
+###
+# last run dates
+###
+
+touch $DIR/00-last-run
+rm $DIR/*-last-run
+touch $DIR/`eval date +%m-%d-%Y`-last-run
+#+end_src
+
+
+
+
+** Binary clock
+#+begin_src sh
+#! /bin/bash
+
+# Output for conky based on using
+# Moon Phases font which can be found
+# here: http://www.fontspace.com/curtis-clark/moon-phases
+
+### strings for 0's and 1's
+# hex code for hollow circle
+# zero="\\xE2\\x97\\x8B"
+zero="@"
+
+# hex code for filled circle
+# one="\\xE2\\x97\\x8F"
+one="0"
+
+
+# command format:
+# binary.sh binary-slots hr/min
+# example: binary.sh 5 hr
+# example: binary.sh 6 min
+
+### variables
+exp=$(($1-1))
+time=0
+
+if [[ "$2" = hr ]]; then
+  time=`date +%H`
+elif [[ $2 = min ]]; then
+  time=`date +%M`
+else
+  exit
+fi    
+
+output=""
+
+# convert -> binary
+while [[ $exp -ge 0 ]]
+do
+  if [[ $((10#$time)) -ge 2**$exp ]]; then
+    time=$(( 10#$time - 2**$exp ))
+    output="${output}${one}"
+  else
+    output="${output}${zero}"
+  fi
+  exp=$(( 10#$exp - 1 ))
+done
+
+echo -e "${output}"
+#+end_src
+
+** Hourly bup
+
+#+begin_src
+#!/bin/bash
+
+DAT=/media/vault
+BUP=/media/bup
+CONFIG=/home/jwhendy/installed/arch-configs
+
+# overview
+# rsync hourly.2 -> daily.0
+# rm hourly.2
+# mv hourly.1    -> hourly.2
+# mv hourly.0    -> hourly.1
+
+
+if [[ -e /dev/sdb1 ]] ; then
+
+   if mountpoint -q /media/bup ; then
+
+      echo "bup already mounted; proceeding" 
+
+   else
+     echo "bup not mounted; mounting..."
+     truecrypt -t --protect-hidden=no -k "" --password=$PASS --filesystem=none --slot=2 /dev/sdb1 ;
+     mount /media/bup ;
+
+   fi;
+
+     if [ -d $BUP/temp ] ; then
+        rm -rf $BUP/temp ;
+     fi;
+
+     rsync -avzO  --delete --exclude-from=$CONFIG/rsync-excludes /home/jwhendy/ $DAT/jwhendy/ ;
+     rsync -avzO  --delete --exclude=vault* --link-dest=../vault.hourly.0 $DAT/ $BUP/temp ;
+
+     if [ -d $BUP/vault.hourly.2 ] ; then    
+        rm -rf $BUP/vault.hourly.2 ;
+     fi;
+
+     if [ -d $BUP/vault.hourly.1 ] ; then
+        mv $BUP/vault.hourly.1 $BUP/vault.hourly.2 ;
+     fi;
+
+     if [ -d $BUP/vault.hourly.0 ] ; then
+        mv $BUP/vault.hourly.0 $BUP/vault.hourly.1 ;
+     fi;
+
+     mv $BUP/temp $BUP/vault.hourly.0 ;
+
+     umount /media/bup ;
+     truecrypt -d /dev/sdb1 ;
+
+
+fi;
+#+end_src
+** Daily bup
+
+#+begin_src sh
+#!/bin/bash
+
+BUP=/media/bup
+
+# overview
+# rsync daily.2 -> weekly.0
+# rm daily.2
+# mv daily.1    -> daily.2
+# mv daily.0    -> daily.1
+
+if [[ -e /dev/sdb1 ]] ; then
+
+   if mountpoint -q /media/bup ; then
+
+      echo "bup already mounted; proceeding" 
+
+   else
+     echo "bup not mounted; mounting..."
+     truecrypt -t --protect-hidden=no -k "" --password=$PASS --filesystem=none --slot=2 /dev/sdb1 ;
+     mount /media/bup ;
+
+   fi;
+
+   if [ -d $BUP/vault.daily.2 ] ; then    
+      rm -rf $BUP/vault.daily.2 ;
+   fi;
+
+   if [ -d $BUP/vault.daily.1 ] ; then
+      mv $BUP/vault.daily.1 $BUP/vault.daily.2 ;
+   fi;
+
+   if [ -d $BUP/vault.daily.0 ] ; then
+      mv $BUP/vault.daily.0 $BUP/vault.daily.1 ;
+   fi;
+
+   if [ -d $BUP/vault.hourly.2 ] ; then
+      mv $BUP/vault.hourly.2 $BUP/vault.daily.0 ;
+   fi;
+
+   umount /media/bup ;
+   truecrypt -d /dev/sdb1 ;
+
+fi;
+#+end_src
+** Weekly bup
+
+#+begin_src sh
+#!/bin/bash
+
+BUP=/media/bup
+
+# overview
+# rsync weekly.2 -> monthly.0
+# rm weekly.2
+# mv weekly.1    -> weekly.2
+# mv weekly.0    -> weekly.1
+
+if [[ -e /dev/sdb1 ]] ; then
+
+   if mountpoint -q /media/bup ; then
+
+      echo "bup already mounted; proceeding" 
+
+   else
+     echo "bup not mounted; mounting..."
+     truecrypt -t --protect-hidden=no -k "" --password=$PASS --filesystem=none --slot=2 /dev/sdb1 ;
+     mount /media/bup ;
+
+   fi;
+
+   if [ -d $BUP/vault.weekly.2 ] ; then    
+      rm -rf $BUP/vault.weekly.2 ;
+   fi;
+
+   if [ -d $BUP/vault.weekly.1 ] ; then
+      mv $BUP/vault.weekly.1 $BUP/vault.weekly.2 ;
+   fi;
+
+   if [ -d $BUP/vault.weekly.0 ] ; then
+      mv $BUP/vault.weekly.0 $BUP/vault.weekly.1 ;
+   fi;
+
+   if [ -d $BUP/vault.daily.2 ] ; then
+      mv $BUP/vault.daily.2 $BUP/vault.weekly.0 ;
+   fi;
+
+   umount /media/bup ;
+   truecrypt -d /dev/sdb1 ;
+
+fi;
+#+end_src
+** Monthly bup
+
+#+begin_src sh
+#!/bin/bash
+
+BUP=/media/bup
+
+# overview
+# rsync monthly.2 -> yearly.0
+# rm monthly.2
+# mv monthly.1    -> monthly.2
+# mv monthly.0    -> monthly.1
+
+if [[ -e /dev/sdb1 ]] ; then
+
+   if mountpoint -q /media/bup ; then
+
+      echo "bup already mounted; proceeding" 
+
+   else
+     echo "bup not mounted; mounting..."
+     truecrypt -t --protect-hidden=no -k "" --password=$PASS --filesystem=none --slot=2 /dev/sdb1 ;
+     mount /media/bup ;
+
+   fi;
+
+   if [ -d $BUP/vault.monthly.2 ] ; then    
+      rm -rf $BUP/vault.monthly.2
+   fi;
+
+   if [ -d $BUP/vault.monthly.1 ] ; then
+      mv $BUP/vault.monthly.1 $BUP/vault.monthly.2 ;
+   fi;
+
+   if [ -d $BUP/vault.monthly.0 ] ; then
+      mv $BUP/vault.monthly.0 $BUP/vault.monthly.1 ;
+   fi;
+
+   if [ -d $BUP/vault.weekly.2 ] ; then
+      mv $BUP/vault.weekly.2 $BUP/vault.monthly.0 ;
+   fi;
+
+   umount /media/bup ;
+   truecrypt -d /dev/sdb1 ;
+
+fi;
+#+end_src
+** Brightness
+
+Up
+#+begin_src sh
+#! /bin/bash
+
+current=`cat /sys/class/backlight/acpi_video0/brightness`
+echo $current
+
+
+if [ $current -le 22 ]; then
+
+  new=$(($current + 2))
+
+else
+
+  new=24
+
+fi
+
+echo $new > /sys/class/backlight/acpi_video0/brightness
+#+end_src
+
+
+Down
+#+begin_src sh
+#! /bin/bash
+
+current=`cat /sys/class/backlight/acpi_video0/brightness`
+echo $current
+
+
+if [ $current -ge 2 ]; then
+
+  new=$(($current - 2))
+  echo $new > /sys/class/backlight/acpi_video0/brightness
+
+else
+
+  xset dpms force off  
+
+fi
+#+end_src
+** Export org-agenda to file
+
+#+begin_src sh
+#!/bin/bash
+
+if [ ! -d /tmp/org ]; then
+  mkdir /tmp/org
+fi
+
+rm /tmp/org/*.org
+cp ~/org/*.org /tmp/org/
+
+emacs -batch -l ~/.emacs -eval '(org-batch-agenda "e" org-agenda-files (quote ("/tmp/org/")))' \
+   > ~/org/aux/agenda-export.txt
+
+
+#if [ "$(pidof emacs)" ] ; then
+#
+#echo "" > /dev/null
+#
+#else
+#   emacs -batch -l ~/.emacs -eval '(org-batch-agenda "e")' > ~/org/aux/agenda-export.txt ;
+
+#fi;
+#+end_src
+
+* LaTeX
+- installed system stuff to ~/.texlive/2012
+- set user var stuff to ~/.texlive2012
+
+** Beamer themes
+- [[https://github.com/jensbob/simple_beamer][simple theme with uniform background]]
+- [[https://github.com/andrefs/beamer-themes/branches][reveal beige and simple look nice]]
+- [[https://github.com/bbatsov/beamer-torino-theme][Torino]]
+- [[https://github.com/beza1e1/nakedbeamer][naked beamer theme]]
