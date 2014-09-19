@@ -1,0 +1,14 @@
+.cache
+.config/chromium
+.macromedia
+.mozilla
+.elisp/org.git
+.adobe
+.g*
+.texlive
+.thumbnails
+.R
+Conferencing
+Downloads/linux-*
+Dropbox
+org

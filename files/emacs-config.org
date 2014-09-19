@@ -1,0 +1,321 @@
+* Set window options
+
+Sets font size, window location, width, and height.
+
+#+begin_src emacs-lisp
+;; font size, window height/width/placement
+(set-face-attribute 'default nil :height 100)
+(setq initial-frame-alist
+     '((left . 0) (top . 16)
+       (width . 120) (height . 52)))
+(tool-bar-mode 0)
+#+end_src
+
+
+* Org-mode options
+
+Exporter backends and beamer setup
+
+#+begin_src emacs-lisp
+(require 'ox-latex)
+(require 'ox-html)
+(require 'ox-beamer)
+(require 'ox-md)
+(require 'ox-odt)
+(require 'ox-taskjuggler)
+(require 'ox-ravel)
+
+(add-to-list 'org-latex-classes
+             '("beamer"
+               "\\documentclass\[presentation\]\{beamer\}"
+               ("\\section\{%s\}" . "\\section*\{%s\}")
+               ("\\subsection\{%s\}" . "\\subsection*\{%s\}")
+               ("\\subsubsection\{%s\}" . "\\subsubsection*\{%s\}")))
+
+(setq koma-article-class
+      '("koma-article"
+        "\\documentclass[11pt]{scrartcl}"
+        ("\\section{%s}" . "\\section*{%s}")
+        ("\\subsection{%s}" . "\\subsection*{%s}")
+        ("\\subsubsection{%s}" . "\\subsubsection*{%s}")
+        ("\\paragraph{%s}" . "\\paragraph*{%s}")
+        ("\\subparagraph{%s}" . "\\subparagraph*{%s}")))
+
+(progn
+  (require 'ox-latex)
+  (add-to-list 'org-latex-classes koma-article-class t))
+
+(setq org-latex-tables-booktabs t)
+
+(setq org-babel-python-command "python2")
+
+;; for reveal or deck, I think we just add the dir to the presentation dir
+;;(setq org-reveal-root "file:///home/jwhendy/.elisp/site-lisp/reveal.js")
+;;(setq org-deck-directories "/home/jwhendy/.elisp/site-lisp/deck.js")
+;;(setq org-deck-base-url "/home/jwhendy/.elisp/site-lisp/deck.js")
+
+(setq org-src-preserve-indentation t)
+
+#+end_src
+
+Change scientific format for latex tables
+#+begin_src emacs-lisp
+
+(setq org-latex-table-scientific-notation nil)
+
+#+end_src
+
+Here's how to customize latex export of sections ([[https://lists.gnu.org/archive/html/emacs-orgmode/2013-03/msg01329.html][mailing list link]]):
+
+#+begin_src emacs-lisp
+
+;;(defun john-org-latex-headline-function (todo todo-type priority text tags)
+;;  "The docstring of my function."
+;;  (concat
+;;   (and todo (format "{}" todo))
+;;   (and priority (format "{} " ))
+;;   (and text (format "{\\vspace{-\\baselineskip}}" ))
+;;   (and tags
+;;        (format "\\hfill{}\\textit{}" (mapconcat 'identity tags ":")))))
+
+#+end_src
+
+
+Load orgmode modules:
+
+#+begin_src emacs-lisp
+(require 'org-inlinetask)
+(require 'org-impress-js)
+(require 'org-id)
+#+end_src
+
+Org-specific keyboard shorcuts
+
+#+begin_src emacs-lisp
+(global-set-key "\C-cl" 'org-store-link)
+(global-set-key "\C-ca" 'org-agenda)
+#+end_src
+
+
+Org-mode appearance tweaks
+
+#+begin_src emacs-lisp
+(setq org-hide-leading-stars t)
+(setq org-blank-before-new-entry nil)
+(setq org-link-file-path-type (quote absolute))
+#+end_src
+
+
+Todo keywords
+
+#+begin_src emacs-lisp
+;; todos
+(setq org-todo-keywords '((sequence 
+      "todo(t)" "next(n)" "wait(w@)" "|" 
+      "done(d)" "cancelled(c@/@)")))
+#+end_src
+
+Clocking
+
+#+begin_src emacs-lisp
+;; clocks
+(require 'org-clock)
+(setq org-clock-into-drawer t)
+(global-set-key "\C-cr" 'org-resolve-clocks)
+(global-set-key "\C-ce" 'org-set-effort)
+(setq org-clock-out-remove-zero-time-clocks t)
+(setq org-clock-out-when-done t)
+#+end_src
+
+
+Log into drawers
+
+#+begin_src emacs-lisp
+;; logging
+(setq org-log-into-drawer t)
+(setq org-log-done (quote time))
+#+end_src
+
+
+Refiling and archiving
+
+#+begin_src emacs-lisp
+;; file format, allow creating headlines in refile
+;;(setq org-refile-allow-creating-parent-nodes (quote confirm))
+(setq org-archive-location "~/org/archive/archive_2012.org::* From %s")
+(setq org-archive-save-context-info
+   (quote (time file itags olpath)))
+(setq org-refile-targets (quote ((nil :maxlevel . 3)
+                                 (org-agenda-files :maxlevel . 3))))
+(setq org-refile-use-outline-path (quote file))
+
+;; open org archive files in org-mode
+(add-to-list 'auto-mode-alist '("\\.\\(org\\|org_archive\\)$" . org-mode))
+#+end_src
+
+
+Capture templates
+
+#+begin_src emacs-lisp
+;; capture 
+(global-set-key "\C-cc" 'org-capture)
+(setq org-capture-templates
+  '(("l" "log" entry (file+headline "~/org/capture.org" "Log")
+         "* %? \n%u " :clock-in t :clock-resume t)
+    ("t" "task" entry (file+headline "~/org/projects.org" "Tasks")
+         "* todo %? %^g\n%u" :prepend t)
+
+    ("c" "clock" entry (file+datetree "~/org/clocking.org")
+         "* %?\n%u" :clock-in t :clock-keep t)))
+#+end_src
+
+
+Agenda options
+
+#+begin_src emacs-lisp
+;; agenda stuff    
+;;(setq org-agenda-todo-ignore-scheduled (quote future))
+;;(setq org-agenda-todo-ignore-deadlines (quote far))
+(setq org-agenda-skip-scheduled-if-done t)
+(setq org-agenda-skip-deadline-if-done t)
+(setq org-agenda-show-all-dates nil)
+(setq org-deadline-warning-days 7)
+(setq org-agenda-custom-commands 
+    '(("w" "Agenda"
+        ((agenda "" ((org-agenda-ndays 7)))
+
+         (todo "next"
+            ((org-agenda-overriding-header "Next Actions")))
+
+         (todo "proj"
+            ((org-agenda-overriding-header "Projects"))
+             (org-agenda-sorting-strategy
+                 '(todo-state-down category-keep)))))
+
+      ("e" "Export"
+        ((agenda "" ((org-agenda-ndays 7)))
+
+         (todo "next"
+            ((org-agenda-overriding-header "Next Actions")))))
+))
+#+end_src
+
+Babel options
+
+#+begin_src emacs-lisp
+(require 'ess-site)
+(setq org-confirm-babel-evaluate nil)
+#+end_src
+
+Functionality options
+
+#+begin_src emacs-lisp
+;; taskjuggler options
+(setq org-taskjuggler-target-version 3.4)
+(setq org-taskjuggler-default-reports (quote ("include \"reports.tji\"")))
+(setq org-taskjuggler-keep-project-as-task nil)
+
+;; use unique ids for links
+(setq org-link-to-org-use-id 'create-if-interactive)
+
+;; export options
+(setq org-export-html-validation-link "")
+;; (setq org-export-latex-tag-markup "\\hfill\\textbf{%s}")
+(setq org-export-allow-bind-keywords t)
+
+;; booktabs tables
+;; (setq org-export-latex-tables-hline "\\midrule")
+;; (setq org-export-latex-tables-tstart "\\toprule")
+;; (setq org-export-latex-tables-tend "\\bottomrule")
+
+;; (setq org-format-latex-options (plist-put org-format-latex-options (quote (:matchers (quote ("begin" "$1" "$$" "\\(" "\\["))))))
+
+#+end_src
+
+MobileOrg
+
+#+begin_src emacs-lisp :eval yes
+
+(setq org-directory "~/vault/personal/home-notes")
+(setq org-mobile-directory "~/Dropbox/mobile-org")
+(setq org-mobile-inbox-for-pull "~/vault/personal/home-notes/mobileorg.org")
+(setq org-mobile-files '("~/vault/personal/home-notes/home-notes.org"
+                         "~/vault/personal/home-notes/personal.org"
+                         "~/vault/personal/home-notes/todo.org"
+                         "~/vault/personal/home-notes/whisky.org"))
+
+#+end_src
+
+* Keyboard shortcut definitions
+
+Copy/paste with clipboard functionality.
+
+#+begin_src emacs-lisp
+;; get copy and paste to the clipboard
+(global-set-key "\C-w" 'clipboard-kill-region)
+(global-set-key "\M-w" 'clipboard-kill-ring-save)
+(global-set-key "\C-y" 'clipboard-yank)
+#+end_src
+
+* Fill options
+
+#+begin_src emacs-lisp
+(setq-default fill-column 90)
+(add-hook 'text-mode-hook 'turn-on-auto-fill)
+
+;; unfill region function
+(defun unfill-paragraph ()
+      "Takes a multi-line paragraph and makes it into a single line of text."
+      (interactive)
+      (let ((fill-column (point-max)))
+        (fill-paragraph nil)))
+#+end_src
+
+* Sunrise commander
+
+#+begin_src emacs-lisp
+;; sunrise-commander
+(require 'sunrise-commander)
+(require 'dired-x)
+(setq dired-omit-files "^\\...+$")
+(require 'openwith)
+(setq openwith-mode t)
+(setq sr-history-length 20)
+(setq sr-listing-switches "-al")
+(setq sr-show-file-attributes nil)
+
+#+end_src
+
+* Misc
+
+Stop backup and auto-save
+#+begin_src emacs-lisp
+;; no backup files
+(setq make-backup-files nil)
+
+;; no auto-save (encryption risk)
+(setq auto-save-default nil)
+#+end_src
+
+Set chromium as browser
+#+begin_src emacs-lisp
+(setq browse-url-browser-function 'browse-url-generic
+      browse-url-generic-program "chromium")
+#+end_src
+
+
+Magit
+#+begin_src emacs-lisp
+;;(require 'magit)
+#+end_src
+
+
+* Encryption
+
+#+begin_src emacs-lisp
+
+(require 'epa-file)
+(epa-file-enable)
+(setq epa-armor t)
+
+#+end_src

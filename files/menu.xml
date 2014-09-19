@@ -1,0 +1,205 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<openbox_menu xmlns="http://openbox.org/3.4/menu">
+
+<menu id="apps-accessories-menu" label="accessories">
+  <item label="gonvert">
+    <action name="Execute">
+      <command>gonvert</command>
+    </action>
+  </item>
+  <item label="shot">
+    <action name="Execute">
+      <command>scrot -d 3 '%Y-%m-%d_%H%M%S.png'</command>
+    </action>
+  </item>
+  <item label="grab">
+    <action name="Execute">
+      <command>scrot -s '%Y-%m-%d_%H%M%S.png'</command>
+    </action>
+  </item>
+</menu>
+
+<menu id="apps-term-menu" label="terms">
+  <item label="urxvt">
+    <action name="Execute">
+      <command>urxvt</command>
+    </action>
+  </item>
+  <item label="xterm">
+    <action name="Execute">
+      <command>xterm</command>
+    </action>
+  </item>
+</menu>
+
+<menu id="apps-net-menu" label="internet">
+  <item label="chromium">
+    <action name="Execute">
+      <command>chromium-browser</command>
+      <startupnotify>
+        <enabled>yes</enabled>
+        <wmclass>Chromium</wmclass>
+      </startupnotify>
+    </action>
+  </item>
+  <item label="firefox">
+    <action name="Execute">
+      <command>firefox</command>
+      <startupnotify>
+        <enabled>yes</enabled>
+        <wmclass>Firefox</wmclass>
+      </startupnotify>
+    </action>
+  </item>
+</menu>
+
+<menu id="apps-office-menu" label="office">
+  <item label="calc">
+    <action name="Execute">
+      <command>soffice --calc</command>
+    </action>
+  </item>
+  <item label="writer">
+    <action name="Execute">
+      <command>soffice --writer</command>
+    </action>
+  </item>
+  <item label="impress">
+    <action name="Execute">
+      <command>soffice --impress</command>
+    </action>
+  </item>
+  <item label="draw">
+    <action name="Execute">
+      <command>soffice --draw</command>
+    </action>
+  </item>
+  <item label="base">
+    <action name="Execute">
+      <command>soffice --base</command>
+    </action>
+  </item>
+  <item label="calibre">
+    <action name="Execute">
+      <command>calibre</command>
+    </action>
+  </item>
+</menu>
+
+
+<menu id="apps-education-menu" label="edu">
+  <item label="anki">
+    <action name="Execute">
+      <command>anki</command>
+      <startupnotify>
+        <enabled>yes</enabled>
+      </startupnotify>
+    </action>
+  </item>
+  <item label="dual-n-back">
+    <action name="Execute">
+      <command>brainworkshop</command>
+    </action>
+  </item>
+</menu>
+
+
+<menu id="apps-fileman-menu" label="fms">
+  <item label="spacefm">
+    <action name="Execute">
+      <command>spacefm</command>
+      <startupnotify>
+        <enabled>yes</enabled>
+      </startupnotify>
+    </action>
+  </item>
+  <item label="sunrise">
+    <action name="Execute">
+      <command>emacs -f sunrise</command>
+      <startupnotify>
+        <enabled>yes</enabled>
+      </startupnotify>
+    </action>
+  </item>
+</menu>
+
+
+<menu id="apps-graphics-menu" label="graphics">
+  <item label="geeqie">
+    <action name="Execute">
+      <command>geeqie</command>
+      <startupnotify>
+        <enabled>yes</enabled>
+      </startupnotify>
+    </action>
+  </item>
+  <item label="gimp">
+    <action name="Execute">
+      <command>gimp</command>
+      <startupnotify>
+        <enabled>yes</enabled>
+      </startupnotify>
+    </action>
+  </item>
+  <item label="vlc">
+    <action name="Execute">
+      <command>vlc</command>
+      <startupnotify>
+        <enabled>yes</enabled>
+      </startupnotify>
+    </action>
+  </item>
+</menu>
+
+
+<menu id="system-menu" label="sys">
+  <item label="obconf">
+    <action name="Execute">
+      <command>obconf</command>
+      <startupnotify><enabled>yes</enabled></startupnotify>
+    </action>
+  </item>
+  <item label="bleachbit">
+    <action name="Execute">
+      <command>bleachbit-admin</command>
+      <startupnotify><enabled>yes</enabled></startupnotify>
+    </action>
+  </item>
+  <item label="cups config">
+    <action name="Execute">
+      <command>chromium-browser http://localhost:631/</command>
+      <startupnotify>
+        <enabled>no</enabled>
+        <icon>cups</icon>
+      </startupnotify>
+    </action>
+  </item>
+  <separator />
+  <item label="reconf ob">
+    <action name="Reconfigure" />
+  </item>
+</menu>
+
+#  <separator label="Applications" />
+#  <separator label="System" />
+<menu id="root-menu" label="Openbox 3">
+
+  <menu id="apps-accessories-menu"/>
+  <menu id="apps-office-menu"/>
+  <menu id="apps-net-menu"/>
+  <menu id="apps-graphics-menu"/>
+  <menu id="apps-education-menu"/>
+  <menu id="apps-term-menu"/>
+  <menu id="apps-fileman-menu"/>
+  <menu id="apps-editors-menu"/>
+  <menu id="system-menu"/>
+  <separator />
+  <item label="log out">
+    <action name="Exit">
+      <prompt>yes</prompt>
+    </action>
+  </item>
+</menu>
+
+</openbox_menu>
